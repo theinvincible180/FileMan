@@ -9,7 +9,7 @@ dotenv.config();
 const PORT = process.env.PORT || 6000;
 
 app.listen(PORT, ()=>{
-    console.log(process.env.MONGO_URL);
+    // console.log(process.env.MONGO_URL);
     connectDB();
-    console.log(`Server is running on port ${PORT}`);
+    console.log("\u2705 Server is running on port " + PORT);
 })
