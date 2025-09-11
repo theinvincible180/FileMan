@@ -29,11 +29,39 @@ const userSchema = new mongoose.Schema({
         type : "Number",
         default : 0,
     },
+    files: [{
+        type: String,
+        required: true
+    }],
     documentCount : {
         type : "Number",
         default : 0,
     },
-});
+    limit:{
+        type: "Number",
+        default: 15 * 1024 * 1024,
+    },
+    memoryLimit:{
+        type: "Number",
+        default: 50 * 1024 * 1024,
+    },
+    memoryUsed: {
+        type: "Number",
+        default: 0,
+    },
+    imageCount: {
+        type: "Number",
+        default: 0,
+    },
+    videoCount: {
+        type: "Number",
+        default: 0,
+    },
+    documentCount: {
+        type: "Number",
+        default: 0,
+    }
+}, {timestamps: true});
 
 userSchema.pre('save', async function (next){
     if(this.isModified('password')){

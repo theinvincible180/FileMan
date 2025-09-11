@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import {uploadFile, getFileDetails, deleteFile, updateFileStatus, generateShareShortenLink, sendLinkEmail, updateFileExpiry, updateFilePassword, searchFiles, showUserFiles, generateQR, getDownloadCount, resolveShareLink, verifyFilePassword, getUserFiles} from "./fileThunk";
 
 const fileSlice = createSlice({
-    name: file,
+    name: "file",
     initialState: {
         files: [],
         userFiles: [],

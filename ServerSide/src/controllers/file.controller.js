@@ -27,6 +27,8 @@ const uploadFiles = async (req, res) => {
 
     const savedFiles = [];
     const user = await User.findById(userId);
+    let availableSpace = user.limit - user.memoryUsed;
+    let spaceUsed = 0;
     if (!user) return res.status(404).json({ error: "User not found" });
 
     for (const file of req.files) {
@@ -37,6 +39,10 @@ const uploadFiles = async (req, res) => {
         /\s+/g,
         "_"
       )}_${uniqueSuffix}${extension}`;
+
+      if(file.size/(1024*1024) > availableSpace){
+        return res.status(400).json({ error: `Insufficient storage space. You can upload files up to ${availableSpace / (1024 * 1024)} MB.` });
+      }
 
       const params = {
         Bucket: process.env.AWS_BUCKET_NAME,
@@ -65,6 +71,9 @@ const uploadFiles = async (req, res) => {
         createdBy: userId,
       };
 
+      availableSpace -= file.size/(1024*1024);
+      spaceUsed += file.size/(1024*1024);
+
       if (isPassword === "true") {
         const hashedPassword = await bcrypt.hash(password, 10);
         fileObj.password = hashedPassword;
@@ -82,6 +91,7 @@ const uploadFiles = async (req, res) => {
         user.documentCount += 1;
     }
 
+    user.memoryUsed += spaceUsed;
     await user.save();
 
     return res.status(201).json({
@@ -225,11 +235,23 @@ const downloadFile = async (req, res) => {
 
 const deleteFile = async (req, res) => {
   const { fileId } = req.params;
+  const userId = req.id;
+
 
   try {
-    const file = await file.findById(fileId);
+
+    const user = User.findById(userId);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    const file = await File.findById(fileId);
     if (!file) {
       return res.status(404).json({ error: "File not found" });
+    }
+
+    const size = file.size;
+
+    if(user._id.toString() !== file.createdBy.toString()){
+      return res.status(403).json({ error: "You are not authorized to delete this file" });
     }
 
     if (file.status === "deleted") {
@@ -249,6 +271,9 @@ const deleteFile = async (req, res) => {
 
     await s3.deleteObject(params).promise();
     await File.deleteOne({ _id: fileId });
+
+    user.memoryUsed -= size;
+    await user.save();
 
     return res.status(200).json({ message: "File deleted successfully" });
   } catch (error) {
