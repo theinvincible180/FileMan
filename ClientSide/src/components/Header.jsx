@@ -44,77 +44,69 @@ function Header() {
   };
 
   return (
-    <>
-      {/* DESKTOP HEADER */}
-      <header className="hidden sm:flex fixed top-0 left-0 w-full px-6 py-3 bg-[var(--bg-color)] shadow-md z-50 items-center justify-between">
-        <Link to="/" className="flex items-center space-x-2">
-          <img src={logo} alt="Logo" className="w-10 h-10 rounded-full" />
-          <span className="text-2xl font-bold text-[var(--primary-text)]">
-            FileMan
-          </span>
-        </Link>
+  <header className="hidden sm:flex fixed top-0 left-0 w-full px-6 py-3 bg-white dark:bg-gray-800 shadow-md z-50 items-center justify-between text-black dark:text-white">
+    
+    {/* Left Side: Logo */}
+    <div className="flex items-center space-x-2">
+      <Link to="/" className="flex items-center space-x-2">
+        <img src={logo} alt="Logo" className="w-8 h-8 rounded-full" />
+        <span
+          className={`text-xl sm:text-2xl font-bold text-[var(--primary-text)] ${
+            mode === "dark" ? "dark:text-white" : "light:text-black"
+          }`}
+        >
+          FileMan
+        </span>
+      </Link>
+    </div>
 
-        <div className="flex items-center space-x-5">
+    {/* Right Side */}
+    <div className="flex items-center space-x-3 sm:space-x-5">
+      {/* Theme Toggle */}
+      <button
+        onClick={toggleMode}
+        className="p-2 rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+        title="Toggle theme"
+      >
+        {mode === "light" ? "🌞" : "🌙"}
+      </button>
+
+      {/* Theme Colors */}
+      <div className="hidden sm:flex space-x-2">
+        {Object.keys(colorMap).map((c) => (
           <button
-            onClick={toggleMode}
-            className="p-2 rounded-full border hover:bg-gray-100 dark:hover:bg-gray-700"
-          >
-            {mode === "light" ? "🌞" : "🌙"}
-          </button>
+            key={c}
+            onClick={() => setTheme(c)}
+            className={`w-6 h-6 rounded-full ${colorMap[c]} border-2 transition ${
+              theme === c
+                ? "border-black dark:border-white scale-110"
+                : "border-transparent"
+            }`}
+          />
+        ))}
+      </div>
 
-          <div className="flex space-x-2">
-            {Object.keys(colorMap).map((c) => (
-              <button
-                key={c}
-                onClick={() => setTheme(c)}
-                className={`w-5 h-5 rounded-full ${colorMap[c]} border-2 ${
-                  theme === c ? "border-black" : "border-transparent"
-                }`}
-              />
-            ))}
-          </div>
+      {/* Auth Buttons */}
+      <Link
+        to="/signup"
+        className={`px-3 sm:px-4 py-1 rounded-full border border-gray-300 dark:border-gray-600 text-sm sm:text-base hover:bg-blue-500 hover:text-white transition ${
+          mode === "dark" ? "dark:text-white" : "light:text-black"
+        }`}
+      >
+        Sign Up
+      </Link>
+      <Link
+        to="/login"
+        className={`px-3 sm:px-4 py-1 rounded-full border border-gray-300 dark:border-gray-600 text-sm sm:text-base hover:bg-purple-500 hover:text-white transition ${
+          mode === "dark" ? "dark:text-white" : "light:text-black"
+        }`}
+      >
+        Log In
+      </Link>
+    </div>
+  </header>
+);
 
-          <Link
-            to="/signup"
-            className="px-4 py-1 border rounded-full hover:bg-blue-500 hover:text-white transition"
-          >
-            Sign Up
-          </Link>
-          <Link
-            to="/login"
-            className="px-4 py-1 border rounded-full hover:bg-purple-500 hover:text-white transition"
-          >
-            Log In
-          </Link>
-        </div>
-      </header>
-
-      {/* MOBILE HEADER */}
-      <header className="sm:hidden fixed top-0 left-0 w-full px-4 py-3 bg-[var(--bg-color)] shadow-md z-50 flex flex-row justify-between">
-        <Link to="/" className="flex flex-col items-center">
-          <img src={logo} alt="Logo" className="w-12 h-12 rounded-full" />
-          <span className="font-bold text-lg text-[var(--primary-text)] mt-1">
-            FileMan
-          </span>
-        </Link>
-
-        <div className="flex items-center space-x-2 mt-2">
-          <Link
-            to="/signup"
-            className="px-3 py-1 border rounded-full hover:bg-blue-500 hover:text-white text-sm"
-          >
-            Sign Up
-          </Link>
-          <Link
-            to="/login"
-            className="px-3 py-1 border rounded-full hover:bg-purple-500 hover:text-white text-sm"
-          >
-            Log In
-          </Link>
-        </div>
-      </header>
-    </>
-  );
 }
 
 export default Header;

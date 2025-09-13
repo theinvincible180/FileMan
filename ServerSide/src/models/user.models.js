@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
+// import logo2 from './assets/logo2.png';
 
 const userSchema = new mongoose.Schema({
     fullName: {
@@ -19,7 +21,7 @@ const userSchema = new mongoose.Schema({
     },
     profilePic : {
         type : "String",
-        default : "default.png",
+        default : "",
     },
     totalUploads : {
         type : "Number",

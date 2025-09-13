@@ -1,14 +1,14 @@
-import { File } from "../models/file.models.js";
+import  File  from "../models/file.models.js";
 import s3 from "../config/s3.js";
-import bcrypt from "bcrypt.js";
+import bcrypt from "bcryptjs";
 import AWS from "aws-sdk";
 import nodemailer from "nodemailer";
 import QRCode from "qrcode";
 import shortid from "shortid";
-import { User } from "../models/user.models.js";
+import User from "../models/user.models.js";
 import path from "path";
-import { S3Client, GetObjectCommand } from "!aws-sdk/clienr-s3";
-import { getSignedUrl } from "aws-sdk/s3-request-presigner";
+import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { type } from "os";
 
 const uploadFiles = async (req, res) => {

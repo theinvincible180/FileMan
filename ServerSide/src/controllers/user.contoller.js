@@ -1,5 +1,5 @@
 import User from '../models/user.models.js';
-import bcrypt from 'bcrypt.js';
+import bcrypt from 'bcryptjs';
 import express, {Router} from 'express';
 import jwt from 'jsonwebtoken';
 import {v4 as uuidv4} from 'uuid';
@@ -35,7 +35,7 @@ const registerUser = async (req, res) => {
         }
 
         const cleanedFullName = fullName.trim().replace(/\s+/g, '');
-        userName = `${cleanedFullName.substring(0, 4).toLowerCase()}${generateUniqueId().substring(0,5)}`;
+        const userName = `${cleanedFullName.substring(0, 4).toLowerCase()}${generateUniqueId().substring(0,5)}`;
 
         const idx = Math.random().toString(36).substring(7); // random string
         const profilePic = `https://api.dicebear.com/7.x/avataaars/svg?seed=${idx}`;
@@ -49,7 +49,7 @@ const registerUser = async (req, res) => {
         });
 
         await newUser.save();
-        return res.status(201).json({message: "User registered successfully"});
+        return res.status(201).json({message: "User registered successfully", success: true});
     } catch (error) {
         console.log("Error during registration", error);
         return res.status(500).json({message: "Internal server error"});

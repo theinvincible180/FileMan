@@ -1,4 +1,5 @@
 import express, {Router} from 'express';
+import { registerUser, loginUser, logoutUser, getUsers, getUserById, updateUser, deleteUser } from '../controllers/user.contoller.js';
 
 const router = Router();
 
