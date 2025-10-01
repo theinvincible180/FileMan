@@ -3,6 +3,8 @@ import bcrypt from 'bcryptjs';
 import express, {Router} from 'express';
 import jwt from 'jsonwebtoken';
 import {v4 as uuidv4} from 'uuid';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const generateUniqueId = () => {
     return uuidv4();
@@ -25,6 +27,9 @@ const registerUser = async (req, res) => {
             return res.status(400).json({message : "Password must be at least 8 characters"});
         }
 
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
         if(fullName.length < 6){
             return res.status(400).json({message : "Full name must be at least 6 characters"});
         }
@@ -44,7 +49,7 @@ const registerUser = async (req, res) => {
             fullName,
             userName,
             email,
-            password,
+            password: hashedPassword,
             profilePic
         });
 
@@ -59,7 +64,7 @@ const registerUser = async (req, res) => {
 const logoutUser = async (req, res) => {
     try {
         res.clearCookie("token");
-        return res.status(200).json({message: "Logged Out Successfully"});
+        return res.status(200).json({message: "Logged Out Successfully", success: true});
     } catch (error) {
         console.error("Error during logout", error);
         return res.status(500).json({message: "Error in logging out"});
@@ -76,16 +81,16 @@ const getUsers = async (req, res) => {
 };
 
 const getUserById = async (req, res) => {
-    const {userId} = req.params;
-    try {
-        const user = User.findById(userId);
-        if(!user) {
-            return res.status(404).json({message : "User not found!"});
-        }
-        return res.status(200).json(user);
-    } catch (error) {
-        return res.status(500).json({message: "Error in fetching user by id"});
+    const { userId } = req.params;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching user" });
+  }
 };
 
 const updateUser = async (req, res) => {
@@ -124,23 +129,27 @@ const deleteUser = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
-    const {userName, email, password} = req.body;
+    const {email, password} = req.body;
+    console.log(req.body);
+    // const token = req.cookies.token;
 
     try {
-        const user = await User.findOne({
-            $or:[{email}, {userName}]
-        });
+        const user = await User.findOne({email});
+        console.log(user);
 
         if(!user){
-            return res.status(400).json({message : "Invalid username or email"});
+            return res.status(400).json({message : "Invalid email or password"});
         }
 
-        const isMatch = await bcrypt.compare(password, user,password);
+        if (!user.password) {
+            return res.status(400).json({message : "Invalid email or password"});
+        }
+        const isMatch = await bcrypt.compare(password, user.password);
         if(!isMatch){
-            return res.status(401).json({message : "Invalid password"});
+            return res.status(401).json({message : "Invalid email or password"});
         }
 
-        const token = jwt.sign({userId: user_id}, process.env.JWT_SECRET, {
+        const token = jwt.sign({userId: user._id}, process.env.JWT_SECRET, {
             expiresIn: "30d",
         });
         user.lastlogin = new Date();
@@ -150,14 +159,15 @@ const loginUser = async (req, res) => {
             httpOnly: true,
             secure:process.env.NODE_ENV === "production",
             sameSite: "Strict",
-            maxAge: 24*60*60*1000,
+            maxAge: 30*24*60*60*1000,
         });
 
         res.status(200).json({
+            success: true,
             message : "Login successful",
             token,
             user: {
-                id: user_id,
+                id: user._id,
                 fullName: user.fullName,
                 userName: user.userName,
                 email: user.email,

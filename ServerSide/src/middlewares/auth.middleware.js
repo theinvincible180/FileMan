@@ -1,6 +1,7 @@
-import jwt from 'jsonwebtoken';
+import jwt, { decode } from 'jsonwebtoken';
 
 const authenticate = (req, res, next) => {
+    console.log("Authenticating user...");
     const authHeader = req.header("Authorization");
 
     if(!authHeader || !authHeader.startsWith("Bearer ")){
@@ -11,6 +12,7 @@ const authenticate = (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        console.log(decoded);
         req.user  = decoded;
         next();
     } catch (error) {

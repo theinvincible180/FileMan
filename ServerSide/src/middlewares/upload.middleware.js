@@ -7,7 +7,7 @@ const allowedExtensions = ['.jpg', '.jpeg', '.webp', '.png',
   '.mp4', '.avi', '.mov', '.mkv', '.mk3d', '.mks', '.mka',
   '.pdf'];
 
-const upload =  multer({
+const canUpload =  multer({
     storage, 
     limits: {fileSize: 10 * 1024 * 1024},
     fileFilter: (_req, file, cb) => {
@@ -20,4 +20,4 @@ const upload =  multer({
 
 })
 
-export default upload;
+export default canUpload;

@@ -1,13 +1,16 @@
 import express, {Router} from "express";
-import upload from '../middlewares/upload.middleware.js';
+import multer from "multer";
 import { uploadFiles, downloadFile, deleteFile, updateFileStatus, getFileDetails, generateShareShortenLink, sendLinkEmail, updateFileExpiry, updateAllFileExpiry, updateFilePassword, searchFiles, showUserFiles, generateQR, getDownloadCount, downloadInfo, resolveShareLink, verifyFilePassword, getUserFiles } from "../controllers/file.controller.js";
+import canUpload from "../middlewares/upload.middleware.js";
+import authenticate from "../middlewares/auth.middleware.js";
 
 const router = Router();
+// const upload = multer();
 
-router.post('/upload', upload.array('files'), uploadFiles);
+router.post('/upload', canUpload.array('files'), uploadFiles);
 router.get('/download/:fileId', downloadFile);
-router.delete("/delete/:fileId",deleteFile);
-router.put("/update/:fileId",updateFileStatus);
+router.delete("/delete/:fileId", deleteFile);
+router.put("/update/:fileId", updateFileStatus);
 router.get("/getFileDetails/:fileId",getFileDetails);
 router.post('/generateShareShortenLink', generateShareShortenLink);
 router.post('/sendLinkEmail', sendLinkEmail);

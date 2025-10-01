@@ -5,16 +5,17 @@ import signuplogo from "../assets/signuplogo.png";
 import axios from "axios";
 import { CloudUpload } from "lucide-react";
 import { registerUser } from "../redux/slice/auth/authThunk";
+import { useDispatch } from "react-redux";
 
 const SignUpPage = () => {
   const [input, setInput] = useState({
     email: "",
     password: "",
     fullName: "",
-    userName: "",
   });
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const ChangeEventHandler = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
@@ -25,17 +26,18 @@ const SignUpPage = () => {
 
     try {
       const res = await axios.post(
-        `http://localhost:5000/api/user/register`,
+        `http://localhost:5000/api/users/register`,
         input,
         {
           headers: { "Content-Type": "application/json" },
+          withCredentials: true,
         }
-      );
-      if (res.data.success) {
+      )
+      if(res.data.success){
         toast.success(res.data.message);
         navigate("/login");
       }
-      console.log("Aniket");
+      // console.log("Aniket");
 
     } catch (error) {
       toast.error(error.response?.data?.message || "Signup failed");

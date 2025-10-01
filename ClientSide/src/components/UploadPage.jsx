@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, {useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { uploadFile } from "../redux/slice/file/fileThunk.js";
@@ -22,6 +22,8 @@ const UploadPage = ({ setActiveTab }) => {
   const limit = user?.limit || 15;
   const memoryLeft = user?.memoryLeft || 25;
   let cntFileGreaterThanLimit = 0;
+
+  // console.log(user);
 
   const handleBrowseClick = () => {
     fileInputRef.current.click();
@@ -51,7 +53,7 @@ const UploadPage = ({ setActiveTab }) => {
 
     if (newFiles.length > 0) {
       setFiles((prev) => [...prev, ...newFiles]);
-      toast.success(`✅ ${newFiles.length} file(s) added`);
+      toast.success(`✅ ${newFiles.length} file added`);
     }
   };
 
@@ -103,22 +105,28 @@ const UploadPage = ({ setActiveTab }) => {
       return;
     }
 
+    console.log(files.length);
+
     const formData = new FormData();
     files.forEach((file) => formData.append("files", file));
-    formData.append("userId", user._id ? user._id : user.id);
+    formData.append("userId", user.id ? user.id : user.id);
     formData.append("hasExpiry", enableExpiry);
+
+    // console.log(user.id);
 
     if (enableExpiry && expiry) {
       const hours = Math.ceil(
-        ((new Date(expiry) - new Date()) / 1000) * 60 * 60
+        (new Date(expiry) - new Date()) / (1000 * 60 * 60)
       );
-      formData.append("expiresAt", hours);
+      formData.append("expireAt", hours);
     }
 
     formData.append("isPassword", enablePassword);
     if (enablePassword && password) {
       formData.append("password", password);
     }
+
+    console.log("formData", formData);
 
     try {
       await dispatch(uploadFile(formData)).unwrap();
@@ -127,7 +135,7 @@ const UploadPage = ({ setActiveTab }) => {
       setFiles([]);
       window.location.reload();
     } catch (error) {
-      toast.error(err?.error || "Upload failed");
+      toast.error(error?.message || "Upload failed");
     }
   };
 

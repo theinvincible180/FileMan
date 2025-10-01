@@ -1,15 +1,17 @@
 import  File  from "../models/file.models.js";
 import s3 from "../config/s3.js";
 import bcrypt from "bcryptjs";
-import AWS from "aws-sdk";
+// import AWS from "aws-sdk";
 import nodemailer from "nodemailer";
 import QRCode from "qrcode";
 import shortid from "shortid";
 import User from "../models/user.models.js";
 import path from "path";
-import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
+import { S3Client, GetObjectCommand, PutObjectCommand, DeleteObjectCommand} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { type } from "os";
+// import { type } from "os";
+import dotenv from "dotenv"
+dotenv.config();
 
 const uploadFiles = async (req, res) => {
   if (!req.files || req.files.length === 0) {
@@ -17,16 +19,22 @@ const uploadFiles = async (req, res) => {
   }
 
   const { isPassword, password, hasExpiry, expireAt, userId } = req.body;
-
+  console.log(userId);
   try {
-    const s3 = new AWS.S3({
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    const s3 = new S3Client({
       region: process.env.AWS_REGION,
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      }
     });
 
+    console.log(process.env.AWS_REGION);
+
     const savedFiles = [];
+    // console.log(userId);
     const user = await User.findById(userId);
+    //console.log(user);
     let availableSpace = user.limit - user.memoryUsed;
     let spaceUsed = 0;
     if (!user) return res.status(404).json({ error: "User not found" });
@@ -46,13 +54,14 @@ const uploadFiles = async (req, res) => {
 
       const params = {
         Bucket: process.env.AWS_BUCKET_NAME,
-        Key: `file-share-app/${finalFileName}`,
+        Key: `file-man/${finalFileName}`,
         Body: file.buffer,
         ContentType: file.mimetype,
       };
 
-      const s3result = await s3.upload(params).promise();
-      const fileUrl = s3result.Location;
+      const command = new PutObjectCommand(params);
+      await s3.send(command);
+      const fileUrl = await getSignedUrl(s3, command, { expiresIn: 3600 }); 
       const shortCode = shortid.generate();
 
       const fileObj = {
@@ -63,8 +72,8 @@ const uploadFiles = async (req, res) => {
         hasExpiry: hasExpiry === "true",
         expiresAt:
           hasExpiry === "true"
-            ? new Date(Date.now() + expiresAt * 3600000)
-            : new Date(Date.now(), 10 * 24 * 3600000),
+            ? new Date(Date.now() + expireAt * 3600000)
+            : new Date(Date.now() + 10 * 24 * 3600000),
 
         status: "active",
         shortUrl: `/f/${shortCode}`,
@@ -142,7 +151,7 @@ const downloadInfo = async (req, res) => {
       expiresIn: 24 * 60 * 60,
     });
 
-    file.downoadContent++;
+    file.downloadedContent++;
     await file.save();
 
     const user = await User.findById(file.createdBy);
@@ -215,9 +224,10 @@ const downloadFile = async (req, res) => {
       Expires: 24 * 60 * 60,
     };
 
-    const downloadUrl = s3.getSignedUrl("getObject", params);
+    const command = new GetObjectCommand(params);
+    const downloadUrl = s3.getSignedUrl(s3, command, { expiresIn: 24 * 60 * 60 });
 
-    file.downloadContent++;
+    file.downloadedContent++;
     await file.save();
 
     const user = await User.findById(file.createdBy);
@@ -269,7 +279,7 @@ const deleteFile = async (req, res) => {
       Key: `file-man/${file.name}`,
     };
 
-    await s3.deleteObject(params).promise();
+    await s3.send(new DeleteObjectCommand(params));
     await File.deleteOne({ _id: fileId });
 
     user.memoryUsed -= size;

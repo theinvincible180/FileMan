@@ -26,7 +26,7 @@ function Footer({ setActiveTab }) {
   return (
     <>
       {/* Desktop Footer */}
-      <footer className="hidden sm:flex fixed bottom-0 left-0 w-full py-6 px-8 backdrop-blur-lg bg-white/40 dark:bg-black/30 text-gray-800 dark:text-gray-200 shadow-inner flex-col md:flex-row items-center justify-between border-t border-gray-300/30 dark:border-gray-700/40">
+      <footer className="hidden sm:flex fixed bottom-0 left-0 w-full py-3 px-8 backdrop-blur-lg bg-white/40 dark:bg-black/30 text-gray-800 dark:text-gray-200 shadow-inner flex-col md:flex-row items-center justify-between border-t border-gray-300/30 dark:border-gray-700/40 opacity-100">
   {/* Left Section */}
   <p className="text-sm md:text-base font-medium text-center md:text-left">
     Crafted with ❤️ by{" "}
@@ -36,7 +36,7 @@ function Footer({ setActiveTab }) {
   </p>
 
   {/* Right Section - Social Icons */}
-  <div className="flex items-center gap-6 mt-4 md:mt-0">
+  <div className="flex items-center gap-4 mt-4 md:mt-0">
     {socialIcons.map((icon, i) => (
       <motion.a
         key={i}

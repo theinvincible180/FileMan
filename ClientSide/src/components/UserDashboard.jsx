@@ -8,6 +8,7 @@ import Home from './Home.jsx'
 import FilePage from './FilePage.jsx';
 import PurchasePage from './PurchasePage.jsx';
 import ProfilePage from './ProfilePage.jsx';
+import { useNavigate } from 'react-router-dom';
 import { LoaderIcon } from 'lucide-react';
 
 
@@ -18,6 +19,15 @@ const UserDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("upload");
   const {user} = useSelector((state) => state.auth);
+  // const token = user?.token;
+  // const navigate = useNavigate();
+
+  // useEffect(() => {
+  //   if (!token) {
+  //     navigate("/login");
+  //   }
+  // }, [token, navigate]);
+  
   useEffect(() => {
     const timeout = setTimeout(() => setLoading(false), 1500);
     return () => clearTimeout(timeout);

@@ -10,9 +10,17 @@ import {
   Calendar,
   Clock,
 } from "lucide-react";
+// import useAuth from "../hooks/useAuthUser.js";
+ import { getDownloadCount} from '../redux/slice/file/fileThunk.js' 
 
 const Home = () => {
+  // useAuth();
   const user = useSelector((state) => state.auth.user);
+  const totalDownloads = getDownloadCount(user.id);
+
+
+
+  console.log(user);
 
   if (!user) {
     return (
@@ -32,21 +40,21 @@ const Home = () => {
       >
         <div className="flex items-center gap-4 mb-4 md:mb-0">
           <img
-            src={user.profile || "https://via.placeholder.com/80"}
+            src={user.profilePic || "https://via.placeholder.com/80"}
             alt="profile"
             className="w-14 h-14 md:w-16 md:h-16 rounded-full border-2 border-white"
           />
           <div>
-            <h2 className="text-xl md:text-2xl font-bold">Welcome back, {user.fullname} ✨</h2>
-            <p className="text-xs md:text-sm">{user.email}</p>
-            <p className="text-xs md:text-sm text-gray-200">@{user.username}</p>
+            <h2 className="text-xl md:text-2xl font-bold">Welcome back, {user.fullName} ✨</h2>
+            {/* <p className="text-xs md:text-sm">{user.email}</p>
+            <p className="text-xs md:text-sm text-gray-200">@{user.userName}</p> */}
           </div>
         </div>
         
         <div className="flex items-center gap-2 bg-white/20 p-2 rounded-lg">
           <Clock size={18} />
           <span className="text-sm">
-            Last login: {user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'Never'}
+            Last login: {user.lastlogin ? new Date(user.lastlogin).toLocaleString() : 'Never'}
           </span>
         </div>
       </motion.div>
@@ -54,12 +62,12 @@ const Home = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-6">
         {[
-          { icon: UploadCloud, label: "Total Uploads", value: user.total_upload, color: "text-green-500" },
-          { icon: Download, label: "Total Downloads", value: user.total_download, color: "text-blue-500" },
-          { icon: FileText, label: "Documents", value: user.documentCount, color: "text-purple-500" },
-          { icon: User, label: "Profile", value: user.profile ? "Set" : "Default", color: "text-orange-500" },
+          { icon: UploadCloud, label: "Total Uploads", value: user.totalUploads ?? 0, color: "text-green-500" },
+          { icon: Download, label: "Total Downloads", value: user.totalDownloads ?? 0, color: "text-blue-500" },
+          { icon: FileText, label: "Documents", value: user.documentCount ?? 0, color: "text-purple-500" },
+          { icon: User, label: "Profile", value: user.userName ? user.userName : "Default", color: "text-orange-500" },
           { icon: Calendar, label: "Joined", value: new Date(user.createdAt).toLocaleDateString(), color: "text-gray-600 dark:text-gray-400" },
-          { icon: Clock, label: "Last Login", value: user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : 'Never', color: "text-indigo-500" }
+          { icon: Clock, label: "Last Login", value: user.lastLogin ? new Date(user.lastlogin).toLocaleString() : 'Never', color: "text-indigo-500" }
         ].map((stat, index) => (
           <motion.div 
             key={index}

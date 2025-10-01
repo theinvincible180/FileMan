@@ -4,31 +4,36 @@ import bcrypt from "bcryptjs";
 
 const userSchema = new mongoose.Schema({
     fullName: {
-        type : "String",
+        type : String,
         required : true,
     },
+    lastlogin: {
+        type: Date,
+        default: null,
+    },
     userName : {
-        type : "String",
+        type : String,
         required : true,
     },
     password : {
-        type : "String",
+        type : String,
         required : true,
     },
     email : {
-        type : "String",
+        type : String,
         required : true,
+        unique : true,
     },
     profilePic : {
-        type : "String",
+        type : String,
         default : "",
     },
     totalUploads : {
-        type : "Number",
+        type : Number,
         default : 0,
     },
     totalDownloads : {
-        type : "Number",
+        type : Number,
         default : 0,
     },
     files: [{
@@ -36,41 +41,37 @@ const userSchema = new mongoose.Schema({
         required: true
     }],
     documentCount : {
-        type : "Number",
+        type : Number,
         default : 0,
     },
     limit:{
-        type: "Number",
+        type: Number,
         default: 15 * 1024 * 1024,
     },
     memoryLimit:{
-        type: "Number",
+        type: Number,
         default: 50 * 1024 * 1024,
     },
     memoryUsed: {
-        type: "Number",
+        type: Number,
         default: 0,
     },
     imageCount: {
-        type: "Number",
+        type: Number,
         default: 0,
     },
     videoCount: {
-        type: "Number",
+        type: Number,
         default: 0,
     },
-    documentCount: {
-        type: "Number",
-        default: 0,
-    }
 }, {timestamps: true});
 
-userSchema.pre('save', async function (next){
-    if(this.isModified('password')){
-        this.password = await bcrypt.hash(this.password, 10);
-    }
-    next();
-});
+// userSchema.pre('save', async function (next){
+//     if(this.isModified('password')){
+//         this.password = await bcrypt.hash(this.password, 10);
+//     }
+//     next();
+// });
 
 const User = mongoose.model("User", userSchema);
 export default User;

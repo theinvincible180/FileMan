@@ -1,15 +1,35 @@
 import React, {useState} from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { logoutUser } from "../redux/slice/auth/authSlice";
+import {toast} from "react-toastify";
+import axios from "axios";
 
 const Sidebar = ({sidebarOpen, setSidebarOpen, activeTab, setActiveTab}) => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const logoutHandler = async () => {
+  try {
+    const res =  await axios.get(`http://localhost:5000/api/users/logout`, { withCredentials: true });
+    console.log(res);
+    dispatch(logoutUser(null));
+
+    toast.success("Logged out successfully");
+    navigate("/login");
+  } catch (error) {
+    toast.error("Failed to logout");
+  }
+};
   
   const ActiveTabHandler = (tab) => {
+    if(tab === "logout"){
+      logoutHandler();
+      return;
+    }
     setActiveTab(tab);
-    console.log("Aniket");
+    // console.log("Aniket");
     setSidebarOpen(false);
   };
 
@@ -17,6 +37,7 @@ const Sidebar = ({sidebarOpen, setSidebarOpen, activeTab, setActiveTab}) => {
     { name: "Home", icon: "🏠", id: "home" },
     { name: "Upload Files", icon: "📤", id: "upload" },
     { name: "Settings", icon: "⚙️", id: "settings" },
+    {name: "My Files", icon: "🗂", id: "files"},
     { name: "Logout", icon: "🚪", id: "logout" },
     { name: "Plans", icon: "📋", id: "plans" },
   ];

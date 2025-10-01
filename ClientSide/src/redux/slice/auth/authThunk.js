@@ -17,6 +17,7 @@ export const loginUser = createAsyncThunk('auth/login', async (formData, { rejec
   try {
     const res = await axiosInstance.post('/users/login', formData);
     return res.data;
+    
   } catch (err) {
     return rejectWithValue(err.response.data.message || 'Login failed');
   }

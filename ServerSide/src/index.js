@@ -15,7 +15,7 @@ app.use(cors({
   origin: "http://localhost:5173", // your frontend URL
   credentials: true,               // allow cookies/auth headers
 }));
-app.use('/api/user' , userRoutes);
+app.use('/api/users' , userRoutes);
 app.use('/api/file' , fileRoutes);
 
 app.use(express.static(path.join(__dirname, '/client/dist')));

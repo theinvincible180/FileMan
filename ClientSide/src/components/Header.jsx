@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logo from "../assets/logo.png";
+import { useSelector } from "react-redux";
 
-function Header() {
+function Header({setActiveTab}) {
   const [mode, setModeState] = useState("light");
   const [theme, setThemeState] = useState("pink");
+
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") || "pink";
@@ -65,14 +68,14 @@ function Header() {
       {/* Theme Toggle */}
       <button
         onClick={toggleMode}
-        className="p-2 rounded-full border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+        className="p-2 rounded-full border border-gray-300 dark:border-gray-600 hover:bg-purple-500 dark:hover:bg-white transition"
         title="Toggle theme"
       >
         {mode === "light" ? "🌞" : "🌙"}
       </button>
 
       {/* Theme Colors */}
-      <div className="hidden sm:flex space-x-2">
+      {/* <div className="hidden sm:flex space-x-2">
         {Object.keys(colorMap).map((c) => (
           <button
             key={c}
@@ -84,10 +87,12 @@ function Header() {
             }`}
           />
         ))}
-      </div>
+      </div> */}
 
       {/* Auth Buttons */}
-      <Link
+      {!user ? (
+        <>
+        <Link
         to="/signup"
         className={`px-3 sm:px-4 py-1 rounded-full border border-gray-300 dark:border-gray-600 text-sm sm:text-base hover:bg-blue-500 hover:text-white transition ${
           mode === "dark" ? "dark:text-white" : "light:text-black"
@@ -103,6 +108,20 @@ function Header() {
       >
         Log In
       </Link>
+        </>
+      ) :(
+        <div
+        onClick={() => setActiveTab("profile")}
+        className="flex items-center gap-2 pl-2 pr-4 py-1 rounded-full cursor-pointer bg-gray-100 dark:bg-gray-700 hover:bg-purple-500 hover:text-white transition text-black dark:text-white"
+      >
+        <img
+          src={user?.profilePic}
+          alt="Profile"
+          className="w-8 h-8 rounded-full border border-gray-300 object-cover"
+        />
+        <span className="font-medium">Profile</span>
+      </div>
+      )}
     </div>
   </header>
 );
