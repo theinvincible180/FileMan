@@ -62,10 +62,10 @@ const Home = () => {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mt-6">
         {[
-          { icon: UploadCloud, label: "Total Uploads", value: user.totalUploads ?? 0, color: "text-green-500" },
-          { icon: Download, label: "Total Downloads", value: user.totalDownloads ?? 0, color: "text-blue-500" },
+          { icon: UploadCloud, label: "Total Uploads", value: user?.totalUploads??0, color: "text-green-500" },
+          { icon: Download, label: "Total Downloads", value: user.totalDownloads??0, color: "text-blue-500" },
           { icon: FileText, label: "Documents", value: user.documentCount ?? 0, color: "text-purple-500" },
-          { icon: User, label: "Profile", value: user.userName ? user.userName : "Default", color: "text-orange-500" },
+          { icon: User, label: "Username", value: user.userName ? user.userName : "Default", color: "text-orange-500" },
           { icon: Calendar, label: "Joined", value: new Date(user.createdAt).toLocaleDateString(), color: "text-gray-600 dark:text-gray-400" },
           { icon: Clock, label: "Last Login", value: user.lastLogin ? new Date(user.lastlogin).toLocaleString() : 'Never', color: "text-indigo-500" }
         ].map((stat, index) => (

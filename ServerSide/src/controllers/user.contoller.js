@@ -173,6 +173,10 @@ const loginUser = async (req, res) => {
                 email: user.email,
                 profilePic: user.profilePic,
                 lastlogin: user.lastlogin,
+                totalUploads: user.totalUploads,
+                totalDownloads: user.totalDownloads,
+                documentCount: user.documentCount,
+                createdAt: user.createdAt,
             }, 
         });
 

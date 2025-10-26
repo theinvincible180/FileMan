@@ -119,7 +119,7 @@ function Header({setActiveTab}) {
           alt="Profile"
           className="w-8 h-8 rounded-full border border-gray-300 object-cover"
         />
-        <span className="font-medium">Profile</span>
+        <span className="font-medium">{user.fullName}</span>
       </div>
       )}
     </div>
